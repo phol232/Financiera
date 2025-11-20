@@ -24,8 +24,8 @@ interface InEvaluationWidgetProps {
 }
 
 /**
- * In Evaluation Widget
- * Shows count and list of applications currently in evaluation by analyst
+ * Observed Widget
+ * Shows count and list of applications with observations (observed status) by analyst
  * Requirements: 2.1, 2.3
  */
 export function InEvaluationWidget({
@@ -54,17 +54,17 @@ export function InEvaluationWidget({
 
   return (
     <Widget
-      title="En Evaluación"
+      title="Observadas"
       isLoading={isLoading}
       error={error as Error}
       isEmpty={!applicationsData || applicationsData.applications.length === 0}
-      emptyMessage="No hay solicitudes en evaluación"
+      emptyMessage="No hay solicitudes observadas"
       onRetry={() => refetch()}
     >
       <div className="space-y-4">
         <div className="text-2xl font-bold">{applicationsData?.total || 0}</div>
         <p className="text-xs text-muted-foreground">
-          Solicitudes en proceso de evaluación
+          Solicitudes con observaciones
         </p>
 
         {applicationsData && applicationsData.applications.length > 0 && (

@@ -478,7 +478,7 @@ export function useApplicationsInEvaluation(microfinancieraId: string, analystId
         const response = await apiClient.get(`/api/applications`, {
           microfinancieraId,
           assignedUserId: analystId,
-          status: 'in_evaluation',
+          status: 'observed',
         });
         clearTimeout(timeoutId);
         return response;
