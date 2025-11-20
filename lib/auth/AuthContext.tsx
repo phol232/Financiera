@@ -30,6 +30,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+    
     let refreshInterval: NodeJS.Timeout | null = null;
     
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -74,6 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (!auth) {
+      toast.error('Error: Autenticación no inicializada');
+      throw new Error('Auth not initialized');
+    }
+    
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
@@ -87,6 +97,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (email: string, password: string, displayName: string) => {
+    if (!auth) {
+      toast.error('Error: Autenticación no inicializada');
+      throw new Error('Auth not initialized');
+    }
+    
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
@@ -132,6 +147,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
+    if (!auth) {
+      toast.error('Error: Autenticación no inicializada');
+      throw new Error('Auth not initialized');
+    }
+    
     try {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
@@ -186,6 +206,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
+    if (!auth) {
+      toast.error('Error: Autenticación no inicializada');
+      throw new Error('Auth not initialized');
+    }
+    
     try {
       await signOut(auth);
       localStorage.removeItem('token');
