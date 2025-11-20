@@ -14,24 +14,55 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/lib/auth/AuthContext';
+import { useUserData } from '@/lib/hooks/useUserData';
+import { UserRole } from '@/lib/constants/permissions';
+import { LucideIcon } from 'lucide-react';
 
-const menuItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
-  { icon: FileText, label: 'Cuentas', href: '/accounts' },
-  { icon: CreditCard, label: 'Tarjetas', href: '/cards' },
-  { icon: FileText, label: 'Solicitudes', href: '/applications' },
-  { icon: Settings, label: 'Settings', href: '/settings' },
-  { icon: MessageSquare, label: 'Message', href: '/messages', badge: 2 },
-];
+interface MenuItem {
+  icon: LucideIcon;
+  label: string;
+  href: string;
+  badge?: number;
+}
+
+/**
+ * Navigation menu items by role
+ * Each role sees different menu options based on their permissions
+ */
+const navigationByRole: Record<UserRole, MenuItem[]> = {
+  admin: [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
+    { icon: FileText, label: 'Cuentas', href: '/accounts' },
+    { icon: CreditCard, label: 'Tarjetas', href: '/cards' },
+    { icon: FileText, label: 'Solicitudes', href: '/applications' },
+    { icon: Settings, label: 'Configuración', href: '/settings' },
+  ],
+  employee: [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
+    { icon: FileText, label: 'Cuentas', href: '/accounts' },
+    { icon: CreditCard, label: 'Tarjetas', href: '/cards' },
+    { icon: FileText, label: 'Solicitudes', href: '/applications' },
+  ],
+  analyst: [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
+    { icon: FileText, label: 'Mis Solicitudes', href: '/applications' },
+    { icon: FileText, label: 'Todas las Cuentas', href: '/accounts' },
+    { icon: CreditCard, label: 'Todas las Tarjetas', href: '/cards' },
+  ],
+};
 
 export function Sidebar() {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { data: userData, isLoading } = useUserData();
 
   const handleLogout = async () => {
     await logout();
     window.location.href = '/login';
   };
+
+  // Get menu items based on user role
+  const menuItems = userData?.role ? navigationByRole[userData.role] : [];
 
   return (
     <div className="flex h-screen w-64 flex-col border-r bg-white">
@@ -39,30 +70,42 @@ export function Sidebar() {
         <h2 className="text-lg font-semibold">MENU</h2>
       </div>
       <nav className="flex-1 space-y-1 p-4">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-700 hover:bg-gray-50'
-              )}
-            >
-              <Icon className="h-5 w-5" />
-              <span>{item.label}</span>
-              {item.badge && (
-                <Badge variant="destructive" className="ml-auto">
-                  {item.badge}
-                </Badge>
-              )}
-            </Link>
-          );
-        })}
+        {isLoading ? (
+          // Loading skeleton
+          <div className="space-y-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-10 animate-pulse rounded-lg bg-gray-100"
+              />
+            ))}
+          </div>
+        ) : (
+          menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-700 hover:bg-gray-50'
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{item.label}</span>
+                {item.badge && (
+                  <Badge variant="destructive" className="ml-auto">
+                    {item.badge}
+                  </Badge>
+                )}
+              </Link>
+            );
+          })
+        )}
       </nav>
       <div className="border-t p-4">
         <Link
@@ -80,20 +123,7 @@ export function Sidebar() {
           <span>Log out</span>
         </button>
       </div>
-      <div className="border-t bg-purple-50 p-4">
-        <div className="flex items-start gap-2">
-          <span className="text-xl">⭐</span>
-          <div className="flex-1">
-            <p className="text-xs font-medium text-purple-900">PRO</p>
-            <p className="text-xs text-purple-700">
-              Reminders exits projects, advanced searching and more
-            </p>
-            <Button size="sm" className="mt-2 w-full bg-blue-600">
-              Upgrade Pro
-            </Button>
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 }

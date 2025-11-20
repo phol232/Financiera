@@ -29,24 +29,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded bg-gradient-to-br from-blue-500 to-green-500"></div>
-              <span className="font-semibold">Prime Pay Finance App</span>
             </div>
-            <h1 className="ml-8 text-xl font-semibold">Financial Dashboard</h1>
             {user && (
               <span className="text-sm text-gray-600">
-                Hey welcome back, {user.displayName || user.email?.split('@')[0] || 'Usuario'} 👋
+                Hola, {user.displayName || user.email?.split('@')[0] || 'Usuario'} 👋
               </span>
             )}
           </div>
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search anything here..."
-                className="h-10 w-64 rounded-lg border border-gray-200 bg-gray-50 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none"
-              />
-            </div>
+            
             <Button variant="ghost" size="icon" className="relative">
               <MessageSquare className="h-5 w-5" />
               <Badge

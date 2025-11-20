@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { toast } from 'sonner';
+import { clearStatusCache } from '@/components/auth/AuthGuard';
 
 interface AuthContextType {
   user: User | null;
@@ -89,14 +90,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Actualizar displayName si es necesario
-      if (displayName && userCredential.user) {
-        // El displayName se puede actualizar después si es necesario
-      }
-      
       const token = await userCredential.user.getIdToken();
       localStorage.setItem('token', token);
-      toast.success('Registro exitoso');
+      
+      // Registrar usuario en el backend (crea como 'pending' y envía email al admin)
+      try {
+        const microfinancieraId = localStorage.getItem('microfinancieraId');
+        const selectedRole = localStorage.getItem('selectedRole');
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/notify-registration`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid: userCredential.user.uid,
+            email: email,
+            displayName: displayName,
+            provider: 'email',
+            microfinancieraId: microfinancieraId,
+            role: selectedRole,
+          }),
+        });
+        
+        if (!response.ok) {
+          console.error('Error al registrar usuario en backend:', await response.text());
+        } else {
+          console.log('✅ Usuario registrado en backend correctamente');
+        }
+      } catch (backendError) {
+        console.error('Error al llamar al backend:', backendError);
+        // No lanzamos error para que el registro en Firebase sea exitoso
+      }
+      
+      toast.success('Registro exitoso. Tu cuenta está pendiente de aprobación.');
     } catch (error: any) {
       const errorMessage = getErrorMessage(error.code);
       toast.error(errorMessage);
@@ -110,7 +137,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userCredential = await signInWithPopup(auth, provider);
       const token = await userCredential.user.getIdToken();
       localStorage.setItem('token', token);
-      toast.success('Inicio de sesión con Google exitoso');
+      
+      // Registrar usuario en el backend si es su primer login
+      try {
+        const microfinancieraId = localStorage.getItem('microfinancieraId');
+        const selectedRole = localStorage.getItem('selectedRole');
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/notify-registration`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+            displayName: userCredential.user.displayName,
+            provider: 'google',
+            microfinancieraId: microfinancieraId,
+            role: selectedRole,
+          }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Usuario de Google verificado en backend:', data.message);
+          
+          // Mostrar mensaje apropiado según el status
+          if (data.message === 'User already approved') {
+            toast.success('Inicio de sesión exitoso');
+          } else if (data.message === 'User status checked' && data.user?.status === 'pending') {
+            toast.info('Tu cuenta está pendiente de aprobación');
+          } else {
+            toast.success('Cuenta creada. Pendiente de aprobación');
+          }
+        } else {
+          console.error('Error al registrar usuario en backend:', await response.text());
+          toast.success('Inicio de sesión con Google exitoso');
+        }
+      } catch (backendError) {
+        console.error('Error al llamar al backend:', backendError);
+        toast.success('Inicio de sesión con Google exitoso');
+      }
     } catch (error: any) {
       const errorMessage = getErrorMessage(error.code);
       toast.error(errorMessage);
@@ -122,6 +189,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signOut(auth);
       localStorage.removeItem('token');
+      localStorage.removeItem('microfinancieraId');
+      localStorage.removeItem('selectedRole');
+      clearStatusCache(); // Limpiar el caché del AuthGuard
       toast.success('Sesión cerrada');
     } catch (error: any) {
       toast.error('Error al cerrar sesión');

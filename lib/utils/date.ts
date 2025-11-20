@@ -6,6 +6,25 @@ export function formatDate(date: any): string {
   if (!date || date === null || date === undefined) return 'N/A';
   
   try {
+    // Si es un timestamp serializado desde Firestore Admin (propiedades _seconds/_nanoseconds)
+    if (
+      typeof date === 'object' &&
+      date !== null &&
+      '_seconds' in date &&
+      typeof (date as { _seconds?: number })._seconds === 'number'
+    ) {
+      const seconds = (date as { _seconds: number })._seconds;
+      const dateObj = new Date(seconds * 1000);
+      if (isNaN(dateObj.getTime())) return 'N/A';
+      return dateObj.toLocaleString('es-PE', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
     // Si es un objeto Firestore Timestamp con método toDate
     if (date && typeof date === 'object' && 'toDate' in date && typeof date.toDate === 'function') {
       const dateObj = date.toDate();
@@ -45,6 +64,21 @@ export function formatDate(date: any): string {
         });
       }
     }
+
+    // Si es un número representando milisegundos o segundos
+    if (typeof date === 'number') {
+      const millis = date > 1e12 ? date : date * 1000;
+      const parsed = new Date(millis);
+      if (!isNaN(parsed.getTime())) {
+        return parsed.toLocaleString('es-PE', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }
+    }
     
     // Si es un objeto Date
     if (date instanceof Date) {
@@ -64,4 +98,3 @@ export function formatDate(date: any): string {
     return 'N/A';
   }
 }
-

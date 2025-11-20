@@ -8,8 +8,8 @@ export const apiClient = {
     const url = `${API_BASE_URL}${endpoint}`;
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
-    const headers: HeadersInit = {
-      ...options.headers,
+    const headers: Record<string, string> = {
+      ...(options.headers as Record<string, string>),
     };
 
     // Solo agregar Content-Type si hay body

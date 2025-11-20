@@ -2,6 +2,8 @@
 
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { RoleGuard } from '@/components/auth/RoleGuard';
+import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -151,7 +153,8 @@ export default function CardsPage() {
 
   return (
     <AuthGuard>
-      <DashboardLayout>
+      <RoleGuard allowedRoles={['admin', 'employee', 'analyst']}>
+        <DashboardLayout>
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -237,7 +240,7 @@ export default function CardsPage() {
                       
                       <div className="flex gap-2">
                         {card.status === 'pending' && (
-                          <>
+                          <PermissionGuard permission="cards:activate">
                             <Button 
                               size="sm" 
                               className="flex-1 bg-green-500 hover:bg-green-600 text-white"
@@ -259,55 +262,63 @@ export default function CardsPage() {
                             >
                               Rechazar
                             </Button>
-                          </>
+                          </PermissionGuard>
                         )}
                         {card.status === 'active' && (
                           <>
-                            <Button 
-                              size="sm" 
-                              variant="destructive"
-                              className="flex-1"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openDialog(card, 'suspend');
-                              }}
-                            >
-                              Suspender
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openDialog(card, 'close');
-                              }}
-                            >
-                              Cerrar
-                            </Button>
+                            <PermissionGuard permission="cards:suspend">
+                              <Button 
+                                size="sm" 
+                                variant="destructive"
+                                className="flex-1"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDialog(card, 'suspend');
+                                }}
+                              >
+                                Suspender
+                              </Button>
+                            </PermissionGuard>
+                            <PermissionGuard permission="cards:close">
+                              <Button 
+                                size="sm" 
+                                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDialog(card, 'close');
+                                }}
+                              >
+                                Cerrar
+                              </Button>
+                            </PermissionGuard>
                           </>
                         )}
                         {card.status === 'suspended' && (
                           <>
-                            <Button 
-                              size="sm" 
-                              className="flex-1 bg-green-500 hover:bg-green-600 text-white"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openDialog(card, 'reactivate');
-                              }}
-                            >
-                              Reactivar
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openDialog(card, 'close');
-                              }}
-                            >
-                              Cerrar
-                            </Button>
+                            <PermissionGuard permission="cards:activate">
+                              <Button 
+                                size="sm" 
+                                className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDialog(card, 'reactivate');
+                                }}
+                              >
+                                Reactivar
+                              </Button>
+                            </PermissionGuard>
+                            <PermissionGuard permission="cards:close">
+                              <Button 
+                                size="sm" 
+                                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDialog(card, 'close');
+                                }}
+                              >
+                                Cerrar
+                              </Button>
+                            </PermissionGuard>
                           </>
                         )}
                       </div>
@@ -379,7 +390,8 @@ export default function CardsPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </DashboardLayout>
+      </DashboardLayout>
+    </RoleGuard>
     </AuthGuard>
   );
 }

@@ -4,39 +4,68 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth/AuthContext';
+import { useMicrofinancieras } from '@/lib/hooks/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Mail, Lock, Loader2, Building2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, loginWithGoogle } = useAuth();
+  const { data: microfinancierasData, isLoading: loadingMicrofinancieras } = useMicrofinancieras();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [microfinancieraId, setMicrofinancieraId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const microfinancieras = (microfinancierasData as any)?.microfinancieras || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    
+    if (!microfinancieraId) {
+      setError('Selecciona una microfinanciera');
+      return;
+    }
+    
     setLoading(true);
     try {
+      // Guardar microfinanciera seleccionada
+      localStorage.setItem('microfinancieraId', microfinancieraId);
+      
       await login(email, password);
       router.push('/');
     } catch (error) {
       // Error ya manejado en el contexto
+      console.error('Error en login:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setError('');
+    
+    if (!microfinancieraId) {
+      setError('Selecciona una microfinanciera antes de continuar con Google');
+      return;
+    }
+    
     setLoading(true);
     try {
+      // Guardar microfinanciera seleccionada
+      localStorage.setItem('microfinancieraId', microfinancieraId);
+      
       await loginWithGoogle();
       router.push('/');
     } catch (error) {
       // Error ya manejado en el contexto
+      console.error('Error en login con Google:', error);
     } finally {
       setLoading(false);
     }
@@ -56,6 +85,33 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+                {error}
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="microfinanciera">Microfinanciera</Label>
+              <div className="relative">
+                <Building2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 z-10 pointer-events-none" />
+                <Select
+                  value={microfinancieraId}
+                  onValueChange={setMicrofinancieraId}
+                  disabled={loading || loadingMicrofinancieras}
+                >
+                  <SelectTrigger className="pl-10">
+                    <SelectValue placeholder={loadingMicrofinancieras ? "Cargando..." : "Selecciona tu microfinanciera"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {microfinancieras.map((mf: any) => (
+                      <SelectItem key={mf.id} value={mf.id}>
+                        {mf.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">

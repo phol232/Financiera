@@ -2,6 +2,8 @@
 
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { RoleGuard } from '@/components/auth/RoleGuard';
+import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -218,7 +220,8 @@ export default function AccountsPage() {
 
   return (
     <AuthGuard>
-      <DashboardLayout>
+      <RoleGuard allowedRoles={['admin', 'employee', 'analyst']}>
+        <DashboardLayout>
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -350,7 +353,7 @@ export default function AccountsPage() {
                         </Button>
                         <div className="flex gap-2">
                           {account.status === 'pending' && (
-                            <>
+                            <PermissionGuard permission="accounts:activate">
                               <Button 
                                 size="sm" 
                                 className="flex-1 bg-green-500 hover:bg-green-600 text-white"
@@ -372,55 +375,63 @@ export default function AccountsPage() {
                               >
                                 Rechazar
                               </Button>
-                            </>
+                            </PermissionGuard>
                           )}
                           {account.status === 'active' && (
                             <>
-                              <Button 
-                                size="sm" 
-                                variant="destructive"
-                                className="flex-1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDialog(account, 'block');
-                                }}
-                              >
-                                Bloquear
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDialog(account, 'close');
-                                }}
-                              >
-                                Cerrar
-                              </Button>
+                              <PermissionGuard permission="accounts:block">
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive"
+                                  className="flex-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openDialog(account, 'block');
+                                  }}
+                                >
+                                  Bloquear
+                                </Button>
+                              </PermissionGuard>
+                              <PermissionGuard permission="accounts:close">
+                                <Button 
+                                  size="sm" 
+                                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openDialog(account, 'close');
+                                  }}
+                                >
+                                  Cerrar
+                                </Button>
+                              </PermissionGuard>
                             </>
                           )}
                           {account.status === 'blocked' && (
                             <>
-                              <Button 
-                                size="sm" 
-                                className="flex-1 bg-green-500 hover:bg-green-600 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDialog(account, 'activate');
-                                }}
-                              >
-                                Activar
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDialog(account, 'close');
-                                }}
-                              >
-                                Cerrar
-                              </Button>
+                              <PermissionGuard permission="accounts:activate">
+                                <Button 
+                                  size="sm" 
+                                  className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openDialog(account, 'activate');
+                                  }}
+                                >
+                                  Activar
+                                </Button>
+                              </PermissionGuard>
+                              <PermissionGuard permission="accounts:close">
+                                <Button 
+                                  size="sm" 
+                                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openDialog(account, 'close');
+                                  }}
+                                >
+                                  Cerrar
+                                </Button>
+                              </PermissionGuard>
                             </>
                           )}
                         </div>
@@ -799,7 +810,8 @@ export default function AccountsPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </DashboardLayout>
+      </DashboardLayout>
+    </RoleGuard>
     </AuthGuard>
   );
 }
