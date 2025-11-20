@@ -14,9 +14,9 @@ const firebaseConfig = {
 // Las variables de entorno se cargan automáticamente por Next.js desde .env.local
 // Asegúrate de reiniciar el servidor de desarrollo después de modificar .env.local
 
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
 
 if (typeof window !== 'undefined') {
   if (!getApps().length) {
