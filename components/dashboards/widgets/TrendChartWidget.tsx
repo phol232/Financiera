@@ -30,7 +30,7 @@ export function TrendChartWidget({ microfinancieraId }: TrendChartWidgetProps) {
       title="Tendencia de Solicitudes"
       isLoading={isLoading}
       error={error as Error}
-      isEmpty={!data || !data.data || data.data.length === 0}
+      isEmpty={!data || !(data as any).data || (data as any).data.length === 0}
       emptyMessage="No hay datos de tendencias disponibles"
       onRetry={() => refetch()}
       className="md:col-span-2 lg:col-span-3"
@@ -38,7 +38,7 @@ export function TrendChartWidget({ microfinancieraId }: TrendChartWidgetProps) {
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={data?.data}
+            data={(data as any)?.data}
             margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />

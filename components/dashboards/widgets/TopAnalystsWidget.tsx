@@ -46,7 +46,7 @@ export function TopAnalystsWidget({ microfinancieraId }: TopAnalystsWidgetProps)
       title="Analistas Más Activos"
       isLoading={isLoading}
       error={error as Error}
-      isEmpty={!data || !data.analysts || data.analysts.length === 0}
+      isEmpty={!data || !(data as any).analysts || (data as any).analysts.length === 0}
       emptyMessage="No hay datos de analistas disponibles"
       onRetry={() => refetch()}
       className="md:col-span-2 lg:col-span-2"
@@ -61,7 +61,7 @@ export function TopAnalystsWidget({ microfinancieraId }: TopAnalystsWidgetProps)
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.analysts.map((analyst) => (
+            {(data as any)?.analysts.map((analyst: any) => (
               <TableRow key={analyst.id}>
                 <TableCell className="font-medium">{analyst.name}</TableCell>
                 <TableCell className="text-right">
