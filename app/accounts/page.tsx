@@ -108,7 +108,7 @@ export default function AccountsPage() {
     return typeMap[accountType] || accountType.charAt(0).toUpperCase() + accountType.slice(1);
   };
 
-  const accounts = (data?.accounts || []).filter((account: any) => {
+  const accounts = ((data as any)?.accounts || []).filter((account: any) => {
     if (!searchName.trim()) return true;
     const searchLower = searchName.toLowerCase();
     const accountName = getAccountOwnerName(account).toLowerCase();
