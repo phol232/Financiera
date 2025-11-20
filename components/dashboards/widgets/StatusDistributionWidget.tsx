@@ -52,18 +52,18 @@ export function StatusDistributionWidget({
       title="Distribución de Estados"
       isLoading={isLoading}
       error={error as Error}
-      isEmpty={!data || !data.distribution || data.distribution.length === 0}
+      isEmpty={!data || !(data as any).distribution || (data as any).distribution.length === 0}
       emptyMessage="No hay datos de distribución disponibles"
       onRetry={() => refetch()}
       className="md:col-span-2 lg:col-span-2"
     >
       <div className="space-y-4">
         <div className="text-sm text-muted-foreground">
-          Total de solicitudes: <span className="font-semibold">{data?.total || 0}</span>
+          Total de solicitudes: <span className="font-semibold">{(data as any)?.total || 0}</span>
         </div>
 
         <div className="space-y-3">
-          {data?.distribution.map((item) => (
+          {(data as any)?.distribution.map((item: any) => (
             <div key={item.status} className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">
