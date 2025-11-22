@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { CheckCircle2, XCircle, Loader2, Search, ArrowLeft } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
 
-export default function ValidatePaymentPage() {
+function ValidatePaymentContent() {
   const searchParams = useSearchParams();
   const [sessionId, setSessionId] = useState('');
   const [searchTime, setSearchTime] = useState('');
@@ -341,5 +341,24 @@ export default function ValidatePaymentPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ValidatePaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 flex items-center justify-center">
+        <Card className="shadow-xl max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-center space-x-3">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+              <p className="text-gray-700">Cargando...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <ValidatePaymentContent />
+    </Suspense>
   );
 }
