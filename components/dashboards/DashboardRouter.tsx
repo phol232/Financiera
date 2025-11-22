@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
  */
 export function DashboardRouter() {
   const { data: userData, isLoading, error, refetch } = useUserData();
+  const storedRole = typeof window !== 'undefined' ? (localStorage.getItem('selectedRole') as any) : null;
+  const effectiveRole = userData?.role || storedRole;
 
   // Loading state
   if (isLoading) {
@@ -51,7 +53,7 @@ export function DashboardRouter() {
   }
 
   // No user data or invalid role
-  if (!userData || !userData.role) {
+  if (!userData || !effectiveRole) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <Card className="w-full max-w-md">
@@ -89,7 +91,7 @@ export function DashboardRouter() {
   }
 
   // Render dashboard based on role
-  switch (userData.role) {
+  switch (effectiveRole) {
     case 'employee':
       return <EmployeeDashboard />;
     case 'analyst':

@@ -30,7 +30,15 @@ export function useUserData() {
       
       // Fetch user data from backend
       const response = await apiClient.get<UserData>('/api/users/me');
-      return response;
+
+      // Fallback: si el backend aún no retornó rol, usar el guardado al registrarse
+      const storedRole =
+        typeof window !== 'undefined' ? (localStorage.getItem('selectedRole') as UserRole | null) : null;
+
+      return {
+        ...response,
+        role: (response.role || storedRole || 'employee') as UserRole,
+      };
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes

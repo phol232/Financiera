@@ -44,25 +44,25 @@ export function SystemMetricsWidget({ microfinancieraId }: SystemMetricsWidgetPr
   const metrics = [
     {
       label: 'Cuentas Activas',
-      value: data?.activeAccounts || 0,
+      value: data?.activeAccounts ?? 0,
       icon: Users,
       color: 'text-blue-600',
     },
     {
       label: 'Tarjetas Activas',
-      value: data?.activeCards || 0,
+      value: data?.activeCards ?? 0,
       icon: CreditCard,
       color: 'text-purple-600',
     },
     {
       label: 'Solicitudes en Proceso',
-      value: data?.applicationsInProcess || 0,
+      value: data?.applicationsInProcess ?? 0,
       icon: FileText,
       color: 'text-orange-600',
     },
     {
       label: 'Total Desembolsado',
-      value: data ? formatCurrency(data.totalDisbursed) : 'S/ 0',
+      value: formatCurrency((data?.totalDisbursed as number) ?? 0),
       icon: DollarSign,
       color: 'text-green-600',
     },

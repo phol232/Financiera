@@ -217,6 +217,7 @@ export default function RegisterPage() {
                     <SelectValue placeholder="Selecciona tu rol" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="admin">Administrador</SelectItem>
                     <SelectItem value="analyst">Analista</SelectItem>
                     <SelectItem value="employee">Empleado</SelectItem>
                   </SelectContent>
@@ -249,4 +250,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

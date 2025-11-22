@@ -239,7 +239,7 @@ export default function CardsPage() {
                       </div>
                       
                       <div className="flex gap-2">
-                        {card.status === 'pending' && (
+                        {(['pending', 'requested'] as string[]).includes(card.status) && (
                           <PermissionGuard permission="cards:activate">
                             <Button 
                               size="sm" 
@@ -261,6 +261,31 @@ export default function CardsPage() {
                               }}
                             >
                               Rechazar
+                            </Button>
+                          </PermissionGuard>
+                        )}
+                        {(['rejected', 'observed'] as string[]).includes(card.status) && (
+                          <PermissionGuard permission="cards:activate">
+                            <Button
+                              size="sm"
+                              className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDialog(card, 'approve');
+                              }}
+                            >
+                              Aprobar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="flex-1"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDialog(card, 'close');
+                              }}
+                            >
+                              Cerrar
                             </Button>
                           </PermissionGuard>
                         )}

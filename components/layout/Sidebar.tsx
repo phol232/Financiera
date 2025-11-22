@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   LayoutDashboard,
   CreditCard,
@@ -9,6 +10,9 @@ import {
   Settings,
   MessageSquare,
   LogOut,
+  Package,
+  Users as UsersIcon,
+  UserCog,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -35,6 +39,9 @@ const navigationByRole: Record<UserRole, MenuItem[]> = {
     { icon: FileText, label: 'Cuentas', href: '/accounts' },
     { icon: CreditCard, label: 'Tarjetas', href: '/cards' },
     { icon: FileText, label: 'Solicitudes', href: '/applications' },
+    { icon: Package, label: 'Productos', href: '/products' },
+    { icon: UsersIcon, label: 'Usuarios', href: '/users' },
+    { icon: UserCog, label: 'Workers', href: '/workers' },
     { icon: Settings, label: 'Configuración', href: '/settings' },
   ],
   employee: [
@@ -55,6 +62,14 @@ export function Sidebar() {
   const pathname = usePathname();
   const { logout } = useAuth();
   const { data: userData, isLoading } = useUserData();
+  const [localRole, setLocalRole] = useState<UserRole | null>(null);
+
+  useEffect(() => {
+    const storedRole = typeof window !== 'undefined' ? localStorage.getItem('selectedRole') : null;
+    if (storedRole && (['admin', 'analyst', 'employee'] as UserRole[]).includes(storedRole as UserRole)) {
+      setLocalRole(storedRole as UserRole);
+    }
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -62,7 +77,8 @@ export function Sidebar() {
   };
 
   // Get menu items based on user role
-  const menuItems = userData?.role ? navigationByRole[userData.role] : [];
+  const roleForMenu = userData?.role || localRole || null;
+  const menuItems = roleForMenu ? navigationByRole[roleForMenu] : [];
 
   return (
     <div className="flex h-screen w-64 flex-col border-r bg-white">
@@ -131,4 +147,3 @@ export function Sidebar() {
 export function Header() {
   return null; // Header ahora está en DashboardLayout
 }
-

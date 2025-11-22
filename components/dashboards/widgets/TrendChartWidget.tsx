@@ -3,8 +3,8 @@
 import { Widget } from './Widget';
 import { useApplicationTrends } from '@/lib/hooks/api';
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -29,15 +29,15 @@ export function TrendChartWidget({ microfinancieraId }: TrendChartWidgetProps) {
     <Widget
       title="Tendencia de Solicitudes"
       isLoading={isLoading}
-      error={error as Error}
-      isEmpty={!data || !(data as any).data || (data as any).data.length === 0}
-      emptyMessage="No hay datos de tendencias disponibles"
-      onRetry={() => refetch()}
-      className="md:col-span-2 lg:col-span-3"
-    >
+    error={error as Error}
+    isEmpty={!data || !(data as any).data || (data as any).data.length === 0}
+    emptyMessage="No hay datos de tendencias disponibles"
+    onRetry={() => refetch()}
+    className="col-span-1"
+  >
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
+          <BarChart
             data={(data as any)?.data}
             margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
           >
@@ -64,23 +64,19 @@ export function TrendChartWidget({ microfinancieraId }: TrendChartWidgetProps) {
                 paddingTop: '10px',
               }}
             />
-            <Line
-              type="monotone"
+            <Bar
               dataKey="approved"
-              stroke="hsl(var(--chart-1))"
-              strokeWidth={2}
+              fill="rgba(59, 130, 246, 0.7)" // azul claro
+              stroke="rgba(59, 130, 246, 1)"
               name="Aprobadas"
-              dot={{ fill: 'hsl(var(--chart-1))' }}
             />
-            <Line
-              type="monotone"
+            <Bar
               dataKey="rejected"
-              stroke="hsl(var(--chart-2))"
-              strokeWidth={2}
+              fill="rgba(239, 68, 68, 0.7)" // rojo
+              stroke="rgba(239, 68, 68, 1)"
               name="Rechazadas"
-              dot={{ fill: 'hsl(var(--chart-2))' }}
             />
-          </LineChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </Widget>

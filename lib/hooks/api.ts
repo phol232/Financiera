@@ -342,6 +342,84 @@ export function useMicrofinancieras() {
   });
 }
 
+// Products hooks (admin)
+export function useProducts(microfinancieraId: string) {
+  return useQuery<{ products: any[] }>({
+    queryKey: ['products', microfinancieraId],
+    queryFn: () => apiClient.get('/api/products', { microfinancieraId }),
+    enabled: !!microfinancieraId,
+    staleTime: 60 * 1000,
+  });
+}
+
+export function useCreateProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => apiClient.post('/api/products', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+
+export function useUpdateProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      microfinancieraId,
+      productId,
+      data,
+    }: {
+      microfinancieraId: string;
+      productId: string;
+      data: any;
+    }) => apiClient.put(`/api/products/${microfinancieraId}/${productId}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+
+export function useDeleteProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      microfinancieraId,
+      productId,
+    }: {
+      microfinancieraId: string;
+      productId: string;
+    }) => apiClient.delete(`/api/products/${microfinancieraId}/${productId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+
+// Admin users hooks
+export function useAdminUsers(microfinancieraId: string, status?: string) {
+  return useQuery<{ users: any[] }>({
+    queryKey: ['users', 'admin-list', microfinancieraId, status],
+    queryFn: () =>
+      apiClient.get('/api/users/list', {
+        microfinancieraId,
+        ...(status ? { status } : {}),
+      }),
+    enabled: !!microfinancieraId,
+    staleTime: 60 * 1000,
+  });
+}
+
+// Workers (admin)
+export function useWorkers(microfinancieraId: string) {
+  return useQuery<{ workers: any[] }>({
+    queryKey: ['workers', microfinancieraId],
+    queryFn: () => apiClient.get('/api/workers', { microfinancieraId }),
+    enabled: !!microfinancieraId,
+    staleTime: 60 * 1000,
+  });
+}
+
 // Employee Dashboard hooks
 /**
  * Hook to fetch pending accounts for employee dashboard

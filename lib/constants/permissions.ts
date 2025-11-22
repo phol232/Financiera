@@ -15,6 +15,9 @@ export const pagePermissions: Record<string, UserRole[]> = {
   '/cards': ['admin', 'employee', 'analyst'],    // Todos pueden ver
   '/applications': ['admin', 'analyst', 'employee'], // Todos pueden ver
   '/settings': ['admin'],                        // Solo admin
+  '/products': ['admin'],
+  '/users': ['admin'],
+  '/workers': ['admin'],
 };
 
 /**
@@ -42,4 +45,12 @@ export const actionPermissions: Record<string, UserRole[]> = {
   'applications:reject': ['admin', 'analyst'],
   'applications:condition': ['admin', 'analyst'],
   'applications:calculate-score': ['admin', 'analyst'],
+
+  // Products (solo admin)
+  'products:view': ['admin'],
+  'products:create': ['admin'],
+  'products:update': ['admin'],
+
+  // Users (solo admin)
+  'users:view': ['admin'],
 };
