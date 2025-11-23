@@ -24,9 +24,15 @@ function ValidatePaymentContent() {
       return;
     }
 
+    // NO validar automáticamente - el webhook ya lo procesó
+    // Solo mostrar mensaje de éxito
     if (sessionIdFromUrl && !autoValidated) {
       setAutoValidated(true);
-      handleValidate(sessionIdFromUrl);
+      setResult({
+        success: true,
+        message: 'Pago procesado por el webhook',
+        processedByWebhook: true,
+      });
     }
   }, [searchParams, autoValidated]);
 
@@ -90,7 +96,9 @@ function ValidatePaymentContent() {
                 <div>
                   <p className="font-bold text-xl text-green-900">¡Pago procesado exitosamente!</p>
                   <p className="text-sm text-green-700 mt-2">
-                    Tus cuotas han sido marcadas como pagadas. Puedes cerrar esta ventana y volver a la app.
+                    {result.processedByWebhook 
+                      ? 'Tu pago ha sido procesado automáticamente. Puedes cerrar esta ventana y volver a la app.'
+                      : 'Tus cuotas han sido marcadas como pagadas. Puedes cerrar esta ventana y volver a la app.'}
                   </p>
                 </div>
                 

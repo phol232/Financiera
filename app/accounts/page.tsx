@@ -103,6 +103,7 @@ export default function AccountsPage() {
       'microCredit': 'Microcrédito',
       'personal': 'Personal',
       'business': 'Empresarial',
+      'stripe': 'Pagos Stripe',
     };
     
     return typeMap[accountType] || accountType.charAt(0).toUpperCase() + accountType.slice(1);
