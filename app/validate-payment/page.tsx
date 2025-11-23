@@ -24,19 +24,14 @@ function ValidatePaymentContent() {
       return;
     }
 
-    // NO validar automáticamente - el webhook ya lo procesó
-    // Solo mostrar mensaje de éxito
+    // Obtener información de la sesión para mostrar detalles
     if (sessionIdFromUrl && !autoValidated) {
       setAutoValidated(true);
-      setResult({
-        success: true,
-        message: 'Pago procesado por el webhook',
-        processedByWebhook: true,
-      });
+      fetchSessionInfo(sessionIdFromUrl);
     }
   }, [searchParams, autoValidated]);
 
-  const handleValidate = async (sessionId: string) => {
+  const fetchSessionInfo = async (sessionId: string) => {
     setLoading(true);
     setError('');
     setResult(null);
@@ -53,15 +48,24 @@ function ValidatePaymentContent() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al validar el pago');
+        throw new Error(data.error || 'Error al obtener información del pago');
+      }
+
+      // Marcar que fue procesado por webhook si ya existe
+      if (data.alreadyProcessed) {
+        data.processedByWebhook = true;
       }
 
       setResult(data);
     } catch (err: any) {
-      setError(err.message || 'Error al validar el pago');
+      setError(err.message || 'Error al obtener información del pago');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleValidate = async (sessionId: string) => {
+    fetchSessionInfo(sessionId);
   };
 
   return (
