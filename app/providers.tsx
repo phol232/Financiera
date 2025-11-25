@@ -6,12 +6,12 @@ import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/lib/auth/AuthContext';
 
-// Rutas que NO necesitan AuthProvider
-const PUBLIC_ROUTES = ['/login', '/register', '/validate-payment', '/privacy-policy', '/delete-account'];
+// Rutas que NO necesitan AuthProvider (completamente públicas sin autenticación)
+const NO_AUTH_ROUTES = ['/privacy-policy', '/delete-account'];
 
 export function Providers({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+  const isNoAuthRoute = NO_AUTH_ROUTES.includes(pathname);
 
   const [queryClient] = useState(
     () =>
@@ -32,14 +32,14 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {isPublicRoute ? (
-        // Para rutas públicas, no usar AuthProvider
+      {isNoAuthRoute ? (
+        // Para rutas completamente públicas (sin auth), no usar AuthProvider
         <>
           {children}
           <Toaster />
         </>
       ) : (
-        // Para rutas protegidas, usar AuthProvider
+        // Para todas las demás rutas (incluyendo login/register), usar AuthProvider
         <AuthProvider>
           {children}
           <Toaster />
