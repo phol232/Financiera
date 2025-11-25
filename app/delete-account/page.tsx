@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { AlertCircle, CheckCircle2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function DeleteAccountPage() {
+function DeleteAccountForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [reason, setReason] = useState('');
@@ -283,5 +283,21 @@ export default function DeleteAccountPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+
+export default function DeleteAccountPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    }>
+      <DeleteAccountForm />
+    </Suspense>
   );
 }
