@@ -6,11 +6,15 @@ export function middleware(request: NextRequest) {
   const publicRoutes = ['/login', '/register', '/validate-payment', '/privacy-policy', '/delete-account'];
   const { pathname } = request.nextUrl;
 
+  console.log('🔍 Middleware - Pathname:', pathname);
+
   // Si es una ruta pública, permitir acceso
   if (publicRoutes.includes(pathname)) {
+    console.log('✅ Ruta pública detectada:', pathname);
     return NextResponse.next();
   }
 
+  console.log('🔒 Ruta protegida:', pathname);
   // Para rutas protegidas, el AuthGuard se encargará de la redirección
   // Este middleware solo permite pasar
   return NextResponse.next();
