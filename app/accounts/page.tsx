@@ -25,10 +25,10 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useAccounts, useApproveAccount, useRejectAccount, useChangeAccountStatus } from '@/lib/hooks/api';
+import { useAccounts, useApproveAccount, useRejectAccount, useChangeAccountStatus, useDeleteAccount } from '@/lib/hooks/api';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { User, Mail, MapPin, Search, Phone, Calendar, Building, CreditCard, CheckCircle, XCircle } from 'lucide-react';
+import { User, Mail, MapPin, Search, Phone, Calendar, Building, CreditCard, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import { getAccountGradient, getDarkTextColor } from '@/lib/utils/colors';
 import { formatDate } from '@/lib/utils/date';
 
@@ -43,13 +43,15 @@ export default function AccountsPage() {
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [actionType, setActionType] = useState<'approve' | 'reject' | 'block' | 'activate' | 'close' | null>(null);
+  const [actionType, setActionType] = useState<'approve' | 'reject' | 'block' | 'activate' | 'close' | 'delete' | null>(null);
   const [reason, setReason] = useState('');
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
   const { data, isLoading } = useAccounts(microfinancieraId, filters);
   const approveMutation = useApproveAccount();
   const rejectMutation = useRejectAccount();
   const changeStatusMutation = useChangeAccountStatus();
+  const deleteAccountMutation = useDeleteAccount();
 
   const getAccountOwnerName = (account: any) => {
     // Priorizar campos holder (son los más confiables)
@@ -186,9 +188,27 @@ export default function AccountsPage() {
           });
           toast.success('Cuenta cerrada exitosamente');
           break;
+        case 'delete':
+          if (!reason.trim() || reason.trim().length < 10) {
+            toast.error('El motivo debe tener al menos 10 caracteres');
+            return;
+          }
+          if (deleteConfirmation !== 'DELETE') {
+            toast.error('Debe escribir "DELETE" para confirmar la eliminación');
+            return;
+          }
+          await deleteAccountMutation.mutateAsync({
+            microfinancieraId,
+            accountId: selectedAccount.id,
+            reason,
+            confirmation: deleteConfirmation,
+          });
+          toast.success('Cuenta y todos los datos eliminados permanentemente');
+          break;
       }
       setDialogOpen(false);
       setReason('');
+      setDeleteConfirmation('');
       setSelectedAccount(null);
       setActionType(null);
     } catch (error: any) {
@@ -436,6 +456,21 @@ export default function AccountsPage() {
                             </>
                           )}
                         </div>
+                        {/* Botón de eliminar - Solo para admins */}
+                        <RoleGuard allowedRoles={['admin']}>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="w-full mt-2 border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openDialog(account, 'delete');
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Eliminar Cuenta y Datos
+                          </Button>
+                        </RoleGuard>
                       </div>
                     </div>
                   );
@@ -457,6 +492,7 @@ export default function AccountsPage() {
                 {actionType === 'block' && 'Bloquear Cuenta'}
                 {actionType === 'activate' && 'Activar Cuenta'}
                 {actionType === 'close' && 'Cerrar Cuenta'}
+                {actionType === 'delete' && '⚠️ Eliminar Cuenta Permanentemente'}
               </DialogTitle>
               <DialogDescription>
                 {actionType === 'approve' && '¿Estás seguro de que deseas aprobar esta cuenta?'}
@@ -464,32 +500,56 @@ export default function AccountsPage() {
                 {actionType === 'block' && 'Ingresa el motivo del bloqueo'}
                 {actionType === 'activate' && '¿Estás seguro de que deseas activar esta cuenta?'}
                 {actionType === 'close' && 'Ingresa el motivo del cierre'}
+                {actionType === 'delete' && 'Esta acción eliminará permanentemente la cuenta y TODOS los datos asociados (tarjetas, préstamos, transacciones, documentos, etc.). Esta acción NO se puede deshacer.'}
               </DialogDescription>
             </DialogHeader>
-            {(actionType === 'reject' || actionType === 'block' || actionType === 'close') && (
+            {(actionType === 'reject' || actionType === 'block' || actionType === 'close' || actionType === 'delete') && (
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="reason">Motivo *</Label>
+                  <Label htmlFor="reason">Motivo * {actionType === 'delete' && '(mínimo 10 caracteres)'}</Label>
                   <Textarea
                     id="reason"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     placeholder="Ingresa el motivo..."
                     className="mt-1"
+                    rows={actionType === 'delete' ? 3 : 2}
                   />
                 </div>
+                {actionType === 'delete' && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <Label htmlFor="confirmation" className="text-red-800 font-semibold">
+                      Para confirmar, escribe "DELETE" en mayúsculas:
+                    </Label>
+                    <Input
+                      id="confirmation"
+                      value={deleteConfirmation}
+                      onChange={(e) => setDeleteConfirmation(e.target.value)}
+                      placeholder="DELETE"
+                      className="mt-2 border-red-300 focus:border-red-500"
+                    />
+                  </div>
+                )}
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              <Button variant="outline" onClick={() => {
+                setDialogOpen(false);
+                setReason('');
+                setDeleteConfirmation('');
+              }}>
                 Cancelar
               </Button>
-              <Button onClick={handleAction}>
+              <Button 
+                onClick={handleAction}
+                variant={actionType === 'delete' ? 'destructive' : 'default'}
+              >
                 {actionType === 'approve' && 'Aprobar'}
                 {actionType === 'reject' && 'Rechazar'}
                 {actionType === 'block' && 'Bloquear'}
                 {actionType === 'activate' && 'Activar'}
                 {actionType === 'close' && 'Cerrar'}
+                {actionType === 'delete' && 'Eliminar Permanentemente'}
               </Button>
             </DialogFooter>
           </DialogContent>

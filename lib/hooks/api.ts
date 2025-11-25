@@ -89,6 +89,17 @@ export function useChangeAccountStatus() {
   });
 }
 
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ microfinancieraId, accountId, reason, confirmation }: { microfinancieraId: string; accountId: string; reason: string; confirmation: string }) =>
+      apiClient.delete(`/api/accounts/${microfinancieraId}/${accountId}`, { reason, confirmation }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+    },
+  });
+}
+
 // Cards hooks
 export function useCards(microfinancieraId: string, filters?: any) {
   // Filtrar valores "all" para no enviarlos al backend
