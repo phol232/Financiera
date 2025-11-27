@@ -52,15 +52,6 @@ export function RoleGuard({
     );
   }
 
-  // Debug logs
-  console.log('🔍 RoleGuard Debug:', {
-    userData,
-    userRole: userData?.role,
-    allowedRoles,
-    hasRole: !!userData?.role,
-    isIncluded: userData?.role ? allowedRoles.includes(userData.role) : false,
-  });
-
   // Check if user has required role
   const hasPermission = userData?.role && allowedRoles.includes(userData.role);
 

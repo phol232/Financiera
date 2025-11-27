@@ -457,7 +457,7 @@ export default function AccountsPage() {
                           )}
                         </div>
                         {/* Botón de eliminar - Solo para admins */}
-                        <RoleGuard allowedRoles={['admin']}>
+                        <PermissionGuard permission="accounts:close">
                           <Button 
                             size="sm" 
                             variant="outline"
@@ -470,7 +470,7 @@ export default function AccountsPage() {
                             <Trash2 className="h-4 w-4 mr-2" />
                             Eliminar Cuenta y Datos
                           </Button>
-                        </RoleGuard>
+                        </PermissionGuard>
                       </div>
                     </div>
                   );
