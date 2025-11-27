@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   LayoutDashboard,
+  CircleQuestionMark,
   CreditCard,
   FileText,
   Settings,
@@ -41,7 +42,7 @@ const navigationByRole: Record<UserRole, MenuItem[]> = {
     { icon: FileText, label: 'Solicitudes', href: '/applications' },
     { icon: Package, label: 'Productos', href: '/products' },
     { icon: UsersIcon, label: 'Usuarios', href: '/users' },
-    { icon: UserCog, label: 'Workers', href: '/workers' },
+    { icon: UserCog, label: 'Trabajadores', href: '/workers' },
     { icon: Settings, label: 'Configuración', href: '/settings' },
   ],
   employee: [
@@ -128,15 +129,15 @@ export function Sidebar() {
           href="/support"
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
-          <span className="text-xl">😊</span>
-          <span>Support</span>
+          <CircleQuestionMark className='h-5 w-5' />
+          <span>Soporte</span>
         </Link>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 text-red-500 hover:bg-gray-50"
         >
           <LogOut className="h-5 w-5" />
-          <span>Log out</span>
+          <span>Cerrar sesión</span>
         </button>
       </div>
       

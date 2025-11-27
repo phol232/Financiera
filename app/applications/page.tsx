@@ -536,18 +536,18 @@ export default function ApplicationsPage() {
                   <SelectItem value="disbursed">Desembolsada</SelectItem>
                 </SelectContent>
               </Select>
-              <Input
+              {/* <Input
                 placeholder="Filtrar por zona"
                 value={filters.zone}
                 onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
                 className="w-48"
-              />
-              <Input
+              /> */}
+              {/* <Input
                 placeholder="Filtrar por producto ID"
                 value={filters.productId}
                 onChange={(e) => setFilters({ ...filters, productId: e.target.value })}
                 className="w-48"
-              />
+              /> */}
             </div>
             {isLoading ? (
               <div className="text-center py-8">Cargando...</div>

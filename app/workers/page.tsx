@@ -5,7 +5,7 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { RoleGuard } from '@/components/auth/RoleGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { Loader2, UserCog } from 'lucide-react';
 import { useWorkers } from '@/lib/hooks/api';
 
@@ -24,7 +24,7 @@ export default function WorkersPage() {
                 <UserCog className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Workers</h1>
+                <h1 className="text-2xl font-bold">Trabajadores</h1>
                 <p className="text-gray-600">Personal activo en la microfinanciera</p>
               </div>
             </div>
@@ -43,29 +43,34 @@ export default function WorkersPage() {
                 ) : workers.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No hay workers activos.</p>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Nombre</TableHead>
-                          <TableHead>Correo</TableHead>
-                          <TableHead>Rol</TableHead>
-                          <TableHead>Estado</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {workers.map((worker: any) => (
-                          <TableRow key={worker.id}>
-                            <TableCell className="font-semibold">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {workers.map((worker: any) => (
+                      <div
+                        key={worker.id}
+                        className="rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 bg-gradient-to-br from-purple-50 to-pink-50"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="space-y-1 flex-1">
+                            <h3 className="font-bold text-lg text-gray-900">
                               {worker.displayName || worker.email || 'Sin nombre'}
-                            </TableCell>
-                            <TableCell>{worker.email || 'N/A'}</TableCell>
-                            <TableCell>{(worker.roleIds && worker.roleIds.join(', ')) || 'N/A'}</TableCell>
-                            <TableCell>{worker.isActive ? 'Activo' : 'Inactivo'}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                            </h3>
+                            <p className="text-xs text-gray-600 truncate">{worker.email || 'N/A'}</p>
+                          </div>
+                          <Badge variant={worker.isActive ? 'default' : 'secondary'}>
+                            {worker.isActive ? 'Activo' : 'Inactivo'}
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="p-2 rounded-lg bg-white/50 border border-gray-200">
+                            <p className="text-xs text-gray-600 font-medium">Roles</p>
+                            <p className="text-sm font-semibold text-gray-900 mt-1">
+                              {(worker.roleIds && worker.roleIds.join(', ')) || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </CardContent>

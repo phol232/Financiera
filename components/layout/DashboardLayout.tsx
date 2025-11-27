@@ -64,8 +64,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={handleLogout} className='text-red-500'>
+                    <LogOut className="mr-2 h-4 w-4 text-red-500" />
                     Cerrar Sesión
                   </DropdownMenuItem>
                 </DropdownMenuContent>

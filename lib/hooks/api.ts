@@ -424,7 +424,7 @@ export function useAdminUsers(microfinancieraId: string, status?: string) {
 // Workers (admin)
 export function useWorkers(microfinancieraId: string) {
   return useQuery<{ workers: any[] }>({
-    queryKey: ['workers', microfinancieraId],
+    queryKey: ['worker', microfinancieraId],
     queryFn: () => apiClient.get('/api/workers', { microfinancieraId }),
     enabled: !!microfinancieraId,
     staleTime: 60 * 1000,

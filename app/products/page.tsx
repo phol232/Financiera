@@ -5,7 +5,6 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { RoleGuard } from '@/components/auth/RoleGuard';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Package, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
@@ -199,64 +198,83 @@ export default function ProductsPage() {
                 ) : products.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No hay productos configurados.</p>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Código</TableHead>
-                          <TableHead>Nombre</TableHead>
-                          <TableHead>Tasa</TableHead>
-                          <TableHead>Monto</TableHead>
-                          <TableHead>Plazo</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead>Actualizado</TableHead>
-                          <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {products.map((product: any) => (
-                          <TableRow key={product.id}>
-                            <TableCell className="font-semibold">{product.code}</TableCell>
-                            <TableCell>{product.name}</TableCell>
-                            <TableCell>
-                              {product.rateNominal ? `${product.rateNominal}%` : 'N/A'}{' '}
-                              <span className="text-xs text-muted-foreground">{product.interestType}</span>
-                            </TableCell>
-                            <TableCell>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {products.map((product: any) => (
+                      <div
+                        key={product.id}
+                        className="rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 bg-gradient-to-br from-blue-50 to-indigo-50"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="space-y-1 flex-1">
+                            <Badge className="bg-blue-600 text-white text-xs font-semibold">
+                              {product.code}
+                            </Badge>
+                            <h3 className="font-bold text-lg text-gray-900 mt-2">
+                              {product.name}
+                            </h3>
+                          </div>
+                          <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>
+                            {product.status || 'activo'}
+                          </Badge>
+                        </div>
+
+                        <div className="space-y-3 mb-4">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="p-2 rounded-lg bg-white/50 border border-gray-200">
+                              <p className="text-xs text-gray-600 font-medium">Tasa</p>
+                              <p className="text-sm font-bold text-gray-900">
+                                {product.rateNominal ? `${product.rateNominal}%` : 'N/A'}
+                              </p>
+                              <p className="text-xs text-gray-500">{product.interestType}</p>
+                            </div>
+                            <div className="p-2 rounded-lg bg-white/50 border border-gray-200">
+                              <p className="text-xs text-gray-600 font-medium">Plazo</p>
+                              <p className="text-sm font-bold text-gray-900">
+                                {product.termMin && product.termMax
+                                  ? `${product.termMin}-${product.termMax}`
+                                  : 'N/A'}
+                              </p>
+                              <p className="text-xs text-gray-500">meses</p>
+                            </div>
+                          </div>
+
+                          <div className="p-2 rounded-lg bg-white/50 border border-gray-200">
+                            <p className="text-xs text-gray-600 font-medium">Monto</p>
+                            <p className="text-sm font-bold text-gray-900">
                               {product.amountMin && product.amountMax
                                 ? `S/ ${product.amountMin} - S/ ${product.amountMax}`
                                 : 'N/A'}
-                            </TableCell>
-                            <TableCell>
-                              {product.termMin && product.termMax
-                                ? `${product.termMin} - ${product.termMax} meses`
-                                : 'N/A'}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant={product.status === 'active' ? 'default' : 'secondary'}>
-                                {product.status || 'activo'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{formatDate(product.updatedAt)}</TableCell>
-                            <TableCell className="text-right space-x-2">
-                              <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Editar
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => setConfirmDelete(product)}
-                                disabled={deleteProductMutation.isPending}
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Eliminar
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                            </p>
+                          </div>
+
+                          {product.description && (
+                            <p className="text-xs text-gray-600 line-clamp-2">{product.description}</p>
+                          )}
+                        </div>
+
+                        <div className="pt-3 border-t border-gray-200 flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1"
+                            onClick={() => handleEdit(product)}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Editar
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => setConfirmDelete(product)}
+                            disabled={deleteProductMutation.isPending}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </CardContent>

@@ -36,7 +36,7 @@ export default function AccountsPage() {
   const [microfinancieraId] = useState('mf_demo_001');
   const [filters, setFilters] = useState({
     status: 'all',
-    zone: '',
+    // zone: '',
     accountType: 'all',
   });
   const [searchName, setSearchName] = useState('');
@@ -272,12 +272,12 @@ export default function AccountsPage() {
                   <SelectItem value="rejected">Rechazada</SelectItem>
                 </SelectContent>
               </Select>
-              <Input
+              {/* <Input
                 placeholder="Filtrar por zona"
                 value={filters.zone}
                 onChange={(e) => setFilters({ ...filters, zone: e.target.value })}
                 className="w-48"
-              />
+              /> */}
               <Select value={filters.accountType} onValueChange={(value) => setFilters({ ...filters, accountType: value })}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Filtrar por tipo" />
