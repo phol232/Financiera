@@ -25,7 +25,12 @@ export default function MigrateRolesPage() {
     setResult(null);
 
     try {
-      const response = await apiClient.post('/api/users/migrate-roles', {
+      const response = await apiClient.post<{
+        success: boolean;
+        updated: number;
+        skipped: number;
+        errors: number;
+      }>('/api/users/migrate-roles', {
         microfinancieraId: 'mf_demo_001',
       });
 
