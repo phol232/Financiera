@@ -14,15 +14,6 @@ interface RoleGuardProps {
   redirectTo?: string;
 }
 
-/**
- * RoleGuard HOC
- * Protects routes based on user roles
- * 
- * @param allowedRoles - Array of roles that can access the content
- * @param children - Content to render if user has permission
- * @param fallback - Optional custom fallback UI
- * @param redirectTo - Optional path to redirect to if access denied
- */
 export function RoleGuard({ 
   allowedRoles, 
   children, 
@@ -32,7 +23,6 @@ export function RoleGuard({
   const router = useRouter();
   const { data: userData, isLoading, error } = useUserData();
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
