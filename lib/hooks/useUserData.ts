@@ -28,17 +28,25 @@ export function useUserData() {
     queryFn: async () => {
       if (!user) throw new Error('No user authenticated');
       
+      console.log('🔍 Fetching user data for:', user.uid);
+      
       // Fetch user data from backend with refresh to bypass cache
       const response = await apiClient.get<UserData>('/api/users/me?refresh=true');
+      
+      console.log('📦 Backend response:', response);
 
       // Fallback: si el backend aún no retornó rol, usar el guardado al registrarse
       const storedRole =
         typeof window !== 'undefined' ? (localStorage.getItem('selectedRole') as UserRole | null) : null;
 
-      return {
+      const finalData = {
         ...response,
         role: (response.role || storedRole || 'employee') as UserRole,
       };
+      
+      console.log('✅ Final user data:', finalData);
+
+      return finalData;
     },
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
