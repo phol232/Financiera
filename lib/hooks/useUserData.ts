@@ -28,8 +28,8 @@ export function useUserData() {
     queryFn: async () => {
       if (!user) throw new Error('No user authenticated');
       
-      // Fetch user data from backend
-      const response = await apiClient.get<UserData>('/api/users/me');
+      // Fetch user data from backend with refresh to bypass cache
+      const response = await apiClient.get<UserData>('/api/users/me?refresh=true');
 
       // Fallback: si el backend aún no retornó rol, usar el guardado al registrarse
       const storedRole =
